@@ -1,9 +1,10 @@
-from mesa import Agent, Model
+from mesa import Model
 from mesa.time import StagedActivation
+from Agent import DummyAgent
 import random
 
-class Model(Model):
-    def __init__(self, N):
+class MyModel(Model):
+    def __init__(self, N, coin_toss):
         
         super().__init__()
 
@@ -32,11 +33,16 @@ class Model(Model):
 
         ## Outcome 
         self.outcome = []
+
+        ## Coin Toss
+        self.coin_toss = coin_toss
         
         # Change this up a little
-        for i in range(self.num_agents):  # Example: creating 10 agents
+        for i in range(0, self.num_agents):  # Example: creating 10 agents
             agent = DummyAgent(i, self)
             self.schedule.add(agent)
+
+        
 
     ## CONVENION :: check_* are methods for agents to check certain aspects of the model
     
@@ -79,35 +85,55 @@ class Model(Model):
     
     def check_vote_pass(self):
 
-        votes = self.votes_round[-1]
+        votes = self.votes_round
 
         if sum(votes)/len(votes) > 0.5:
             return True
         else:
             return False
-            
-    def check_outcome_current_round(self):
-
-        if self.action_round[0] == 1 and self.action_round[1] == 1:
-            return True
-        else:
-            return False
     
-   
-    def step(self):
-        self.schedule.step()
-        self.round += 1
+    """
+    CHECKING OUTCOME
 
+    These methods concern information of outcomes
+    historical and current
+    """
+    def check_outcome_current_round(self):
+        return self.outcome[-1]
+    
+    def check_outcome(self):
+        return self.outcome
+        
+    def toss_coin(self):
+        # Using random.choices() for a single selection
+        toss = random.choices([0,1], weights=[self.coin_toss, 1 - self.coin_toss], k=1)[0]
+        return toss
+    
+    """
+    DETERMINE OUTCOME
+
+    Determine Outcomes from Actions
+    """
+    def outcome_determination(self):
         ## determine which team won in given round
         ## 1 = Good team wins, 0 = Bad team wins
         if self.action_round[0] == 1 and self.action_round[1] == 1:
             self.outcome.append(1)
+        elif self.action_round[0] == -1 and self.action_round[1] == -1:
+            self.outcome.append(self.toss_coin())
         else:
             self.outcome.append(0)
 
+   
+    def step(self):
+        self.schedule.step()
+        self.round += 1
+        
         ## Reset Parameters
-        self.whose_turn = self.round % N
+        self.whose_turn = self.round % self.num_agents
         self.chose = False
         self.voting_record.append(self.votes_round)
         self.votes_round = []
+        self.action_record.append(self.action_round)
         self.action_round = [-1,-1]
+
