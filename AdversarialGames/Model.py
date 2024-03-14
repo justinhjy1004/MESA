@@ -27,6 +27,9 @@ class MyModel(Model):
         assert N > 0, "N must be greater than 0."
         self.num_agents = N
 
+        self.MaxAgent = MaxAgent
+        self.MinAgent = MinAgent
+
         ## Staged activation to determine which round
         ## And whose turn to be the chooser
         self.schedule = StagedActivation(self, stage_list=["choose", "vote", "act", "update"])
@@ -53,11 +56,15 @@ class MyModel(Model):
         ## Coin Toss for failure
         self.coin_toss = coin_toss
 
+        ## This is for the set for Min Max groups
         num_min = floor(prop_aversarial * self.num_agents)
         num_max = self.num_agents - num_min
 
         agents = ([MinAgent] * num_min) + ([MaxAgent] * num_max)
         random.shuffle(agents)
+
+        ## This identifies the adversarial agents
+        self.adversarial = [a == MinAgent for a in agents]
 
         # Change this up a little
         for i in range(0, self.num_agents):  # Example: creating 10 agents
@@ -144,6 +151,24 @@ class MyModel(Model):
             self.outcome.append(self.toss_coin())
         else:
             self.outcome.append(0)
+
+    """
+    ADVERSARIAL METHODS
+
+    These are methods that technically only adversarial teams can 
+    see/use
+    """
+    def check_adversarial(self, your_type):
+        if your_type != self.MinAgent:
+            assert "You are not supposed to see this!"
+        else:
+            return self.adversarial
+        
+    def check_action_outcome(self, your_type):
+        if your_type != self.MinAgent:
+            assert "You are not supposed to see this!"
+        else:
+            return self.action_round
 
    
     def step(self):
