@@ -1,7 +1,7 @@
 from mesa import Model
 from mesa.time import StagedActivation
-from Agent import DummyAgent
 import random
+from math import floor
 import pandas
 
 ## TODO Write custom data collection method
@@ -20,7 +20,7 @@ df = pd.DataFrame({'Pairs': model.check_historical_choose_chosen_pairs(),
 ## Figure out how to include "Adversarial Team"
 
 class MyModel(Model):
-    def __init__(self, N, coin_toss):
+    def __init__(self, N, coin_toss, prop_aversarial, MaxAgent, MinAgent):
         
         super().__init__()
 
@@ -50,13 +50,18 @@ class MyModel(Model):
         ## Outcome 
         self.outcome = []
 
-        ## Coin Toss
+        ## Coin Toss for failure
         self.coin_toss = coin_toss
-        
+
+        num_min = floor(prop_aversarial * self.num_agents)
+        num_max = self.num_agents - num_min
+
+        agents = ([MinAgent] * num_min) + ([MaxAgent] * num_max)
+        random.shuffle(agents)
+
         # Change this up a little
         for i in range(0, self.num_agents):  # Example: creating 10 agents
-            agent = DummyAgent(i, self)
-            self.schedule.add(agent)
+            self.schedule.add(agents[i](i, self))
 
         
 
