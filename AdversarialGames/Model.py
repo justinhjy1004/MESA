@@ -2,6 +2,22 @@ from mesa import Model
 from mesa.time import StagedActivation
 from Agent import DummyAgent
 import random
+import pandas
+
+## TODO Write custom data collection method
+
+## TODO Custom batch run methods?
+
+"""
+
+df = pd.DataFrame({'Pairs': model.check_historical_choose_chosen_pairs(), 
+                   'Voting': model.check_historical_voting_records(),
+                   'Outcome': model.check_outcome(),
+                   'Action': model.action_record})
+
+"""
+
+## Figure out how to include "Adversarial Team"
 
 class MyModel(Model):
     def __init__(self, N, coin_toss):
