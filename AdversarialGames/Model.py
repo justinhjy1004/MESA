@@ -2,11 +2,20 @@ from mesa import Model
 from mesa.time import StagedActivation
 import random
 from math import floor
-import pandas
+import pandas as pd
 
 ## TODO Write custom data collection method
 
 ## TODO Custom batch run methods?
+
+def CustomDataCollector(model):
+
+    df = pd.DataFrame({'Pairs': model.check_historical_choose_chosen_pairs(), 
+                   'Voting': model.check_historical_voting_records(),
+                   'Outcome': model.check_outcome(),
+                   'Action': model.check_historical_action_outcome(model.MinAgent)})
+    
+    return df
 
 """
 
@@ -57,6 +66,10 @@ class MyModel(Model):
         self.coin_toss = coin_toss
 
         ## This is for the set for Min Max groups
+
+        if prop_aversarial > 0.5:
+            assert "The proportion of adversaries must be <= 0.5!!!"
+
         num_min = floor(prop_aversarial * self.num_agents)
         num_max = self.num_agents - num_min
 
@@ -169,6 +182,12 @@ class MyModel(Model):
             assert "You are not supposed to see this!"
         else:
             return self.action_round
+        
+    def check_historical_action_outcome(self, your_type):
+        if your_type != self.MinAgent:
+            assert "You are not supposed to see this!"
+        else:
+            return self.action_record
 
    
     def step(self):
