@@ -194,8 +194,6 @@ class MaxGrimTriggerAgent(Agent):
             chooser = self.model_state.check_whose_turn()
             chosen = self.model_state.check_who_was_chosen()
 
-            belief_chooser, belief_chosen = None, None
-
             ## If you are the chooser
             if chooser == self.id:
                 current_vote = 1
@@ -203,6 +201,8 @@ class MaxGrimTriggerAgent(Agent):
             elif chosen == self.id:
                 if self.belief[chooser] != 1:
                     current_vote = 0
+                else:
+                    current_vote = 1
             ## If you are neither
             else:
                 if self.belief[chooser] != 1:
@@ -258,7 +258,9 @@ class MaxGrimTriggerAgent(Agent):
         current_outcome = self.model_state.check_outcome_current_round()
 
         if current_outcome == 1:
+
             return
+        
         else: 
 
             chooser = self.model_state.check_whose_turn()
