@@ -43,7 +43,7 @@ class MyModel(Model):
 
         ## Staged activation to determine which round
         ## And whose turn to be the chooser
-        self.schedule = StagedActivation(self, stage_list=["choose", "vote", "act", "update"])
+        self.schedule = StagedActivation(self, stage_list=["choose", "vote", "act", "outcome", "update"])
         self.round = 0 
         self.whose_turn = self.round % N
 

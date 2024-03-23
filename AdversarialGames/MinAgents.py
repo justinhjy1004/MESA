@@ -113,13 +113,14 @@ class MinRandomAgent(Agent):
         else:
             ## If I am neither
             return
-
-    def update(self):
-
-        ## DO NOT CHANGE
+        
+    ## DO NOT CHANGE 
+    def outcome(self):
         if self.id == 0:
             self.model_state.outcome_determination()
-        ## DO NOT CHANGE
+    ## DO NOT CHANGE
+
+    def update(self):
 
         current_outcome = self.model_state.check_outcome_current_round()
 
@@ -241,13 +242,14 @@ class MinGrimTriggerAgent(Agent):
         else:
             ## If I am neither
             return
-
-    def update(self):
-
-        ## DO NOT CHANGE
+        
+    ## DO NOT CHANGE 
+    def outcome(self):
         if self.id == 0:
             self.model_state.outcome_determination()
-        ## DO NOT CHANGE
+    ## DO NOT CHANGE
+
+    def update(self):
 
         current_outcome = self.model_state.check_outcome_current_round()
 
