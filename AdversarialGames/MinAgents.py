@@ -143,12 +143,13 @@ class MinGrimTriggerAgent(Agent):
 
         ## This is the list of "others" ID to choose from
         N = self.model_state.num_agents
-        others = list(range(0,N))
-        others.remove(self.id)
-        ## It is the belief that an agent is GOOD
-        beliefs = [1] *  (N - 1)
-        
-        self.belief = dict(zip(others, beliefs))
+
+        ## Keep Track of Non-Adversaries Outcome
+        min_team = model.check_adversarial(model.MinAgent)
+
+        max_team_id = [i for i in range(0, N) if not min_team[i]]
+        count = [1] * (len(max_team_id))
+        self.belief = dict(zip(max_team_id, count))
 
     ## DO NOT CHANGE
     def select_from_belief(self):
