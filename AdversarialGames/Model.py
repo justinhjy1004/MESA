@@ -173,6 +173,12 @@ class MyModel(Model):
     These are methods that technically only adversarial teams can 
     see/use
     """
+    def check_if_agent_is_adversarial(self, id, your_type):
+        if your_type != self.MinAgent:
+            assert "You are not supposed to see this!"
+        else:
+            return self.adversarial[id]
+        
     def check_adversarial(self, your_type):
         if your_type != self.MinAgent:
             assert "You are not supposed to see this!"

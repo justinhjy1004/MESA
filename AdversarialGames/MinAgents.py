@@ -145,6 +145,7 @@ class MinGrimTriggerAgent(Agent):
         N = self.model_state.num_agents
 
         ## Keep Track of Non-Adversaries Outcome
+        ## Track how other people belief
         min_team = model.check_adversarial(model.MinAgent)
 
         max_team_id = [i for i in range(0, N) if not min_team[i]]
@@ -196,17 +197,27 @@ class MinGrimTriggerAgent(Agent):
             chooser = self.model_state.check_whose_turn()
             chosen = self.model_state.check_who_was_chosen()
 
-            belief_chooser, belief_chosen = None, None
+            chooser_is_adversarial = self.model_state.check_if_agent_is_adversarial(type(self), chooser)
+            chosen_is_adversarial = self.model_state.check_if_agent_is_adversarial(type(self), chosen)
 
             ## If you are the chooser
             if chooser == self.id:
                 current_vote = 1
             ## If you are the chosen
             elif chosen == self.id:
-                current_vote = 1
+
+                # Reject if another adversary chooses me
+                if chooser_is_adversarial:
+                    current_vote = 0
+                else:
+                    current_vote = 1
+
             ## If you are neither
             else:
-                current_vote = 1
+                if chooser_is_adversarial or chosen_is_adversarial:
+                    current_vote = 1
+                else:
+                    current_vote = 0
 
         ## if nobody was chosen
         else: 
@@ -253,6 +264,13 @@ class MinGrimTriggerAgent(Agent):
     def update(self):
 
         current_outcome = self.model_state.check_outcome_current_round()
+
+        ## Update adversari
+        chooser = self.model_state.check_whose_turn()
+        chosen = self.model_state.check_who_was_chosen()
+
+        chooser_is_adversarial = self.model_state.check_if_agent_is_adversarial(type(self), chooser)
+        chosen_is_adversarial = self.model_state.check_if_agent_is_adversarial(type(self), chosen)
 
         if current_outcome == 1:
             return
