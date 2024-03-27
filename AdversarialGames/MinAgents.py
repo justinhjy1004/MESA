@@ -275,4 +275,10 @@ class MinGrimTriggerAgent(Agent):
         if current_outcome == 1:
             return
         else: 
+            if not chooser_is_adversarial:
+                self.belief[chooser] = 0
+            
+            if not chosen_is_adversarial:
+                self.belief[chosen] = 0
+            
             return

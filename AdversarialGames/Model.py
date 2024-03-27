@@ -14,6 +14,9 @@ def CustomDataCollector(model):
                    'Voting': model.check_historical_voting_records(),
                    'Outcome': model.check_outcome(),
                    'Action': model.check_historical_action_outcome(model.MinAgent)})
+    outcomes["VoteFailed"] = outcomes["Action"].apply(lambda x: 1 if (x[0] == -1 and x[1] == -1) else 0)
+
+    
     
     
     
