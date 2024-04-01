@@ -3,6 +3,7 @@ from mesa.time import StagedActivation
 import random
 from math import floor
 import pandas as pd
+from collections import defaultdict
 
 ## TODO Write custom data collection method
 
@@ -11,16 +12,49 @@ import pandas as pd
 def CustomDataCollector(model):
 
     outcomes = pd.DataFrame({'Pairs': model.check_historical_choose_chosen_pairs(), 
-                   'Voting': model.check_historical_voting_records(),
+                   'Voting' : model.check_historical_voting_records(),
                    'Outcome': model.check_outcome(),
-                   'Action': model.check_historical_action_outcome(model.MinAgent)})
+                   'Action' : model.check_historical_action_outcome(model.MinAgent)})
     outcomes["VoteFailed"] = outcomes["Action"].apply(lambda x: 1 if (x[0] == -1 and x[1] == -1) else 0)
 
+    outcome = sum(outcomes["Outcome"])/len(outcomes["Outcome"])
+    vote_failure = sum(outcomes["VoteFailed"])/len(outcomes["VoteFailed"])
+
+    ## Beliefs of Max Agents
+    beliefs = []
+    for agent in model.agents:
+        if type(agent) is model.MaxAgent:
+            beliefs.append(agent.belief)
+
+    # Initialize dictionaries for totals and counts
+    totals = defaultdict(int)
+    counts = defaultdict(int)
+
+    # Iterate through each dictionary in the list
+    for data in beliefs:
+        # For each key-value pair in the dictionary
+        for key, value in data.items():
+            # Update the total and count for the key
+            totals[key] += value
+            counts[key] += 1
+
+    # Calculate the average for each key
+    averages = {key: totals[key] / counts[key] for key in totals}
     
+    num_min = sum(model.adversarial)
+    num_max = model.num_agents - num_min
+    belief_max = 0
+    belief_min = 0
+    for i in range(0, len(model.adversarial)):
+        if model.adversarial:
+            belief_min += averages[i]
+        else:
+            belief_max += averages[i]
+
+    belief_max = belief_max/num_max
+    belief_min = belief_min/num_min
     
-    
-    
-    return outcomes
+    return outcomes, outcome, vote_failure, belief_min, belief_max
 
 """
 
