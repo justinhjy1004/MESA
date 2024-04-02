@@ -46,7 +46,7 @@ def CustomDataCollector(model):
     belief_max = 0
     belief_min = 0
     for i in range(0, len(model.adversarial)):
-        if model.adversarial:
+        if model.adversarial[i]:
             belief_min += averages[i]
         else:
             belief_max += averages[i]
@@ -54,16 +54,7 @@ def CustomDataCollector(model):
     belief_max = belief_max/num_max
     belief_min = belief_min/num_min
     
-    return outcomes, outcome, vote_failure, belief_min, belief_max
-
-"""
-
-df = pd.DataFrame({'Pairs': model.check_historical_choose_chosen_pairs(), 
-                   'Voting': model.check_historical_voting_records(),
-                   'Outcome': model.check_outcome(),
-                   'Action': model.action_record})
-
-"""
+    return outcomes, outcome, vote_failure, belief_max, belief_min
 
 ## Figure out how to include "Adversarial Team"
 
